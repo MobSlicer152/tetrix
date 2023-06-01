@@ -22,14 +22,16 @@ Author:
 #if USE_PULSE
 #include <PULSE.h>
 PULSE pulse;
+#else
+#define PIN 3
 #endif
 
 #define CANCEL 0x18 // ASCII cancel, means error/redo
-#define DOT 250 // Length of .
-#define DASH 500 // Length of -
-#define LETTER_PAUSE 750 // space between letters
-#define WORD_PAUSE 1000 // space between words
-#define CANCEL_INDEX 54 // index of the CANCEL character in the tables
+#define DOT 500 // Length of .
+#define DASH 1000 // Length of -
+#define LETTER_PAUSE 1250 // space between letters
+#define WORD_PAUSE 1500 // space between words
+#define CANCEL_INDEX 60 // index of the CANCEL character in the tables
 
 // Calculate the size of a normal array
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
@@ -43,7 +45,7 @@ GetCharacterIndex(wchar_t Character)
         L'Р', L'С', L'Т', L'У', L'Ф', L'Х', L'Ц', L'Ч',
         L'Ш', L'Щ', L'Ъ', L'Ы', L'Ь', L'Э', L'Ю', L'Я',
         L'1', L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9', L'0',
-        L'.', L',', L':', L';', L'(', L'\'', L'"', L'-', L'/', L'?', L'!', L'-', L'\x18', L'@'
+        L'.', L',', L'?', L'\'', L'!', L'/', L'(', L')', L'&', L':', L';', L'=', L'+', L'-', L'_', L'"', L'$', L'@', L'\x18'
     };
 
     for ( int i = 0; i < ARRAY_SIZE(LookupTable); i++ )
@@ -121,20 +123,25 @@ Return Value:
         {0b11100,    5}, // 8     ---..
         {0b11110,    5}, // 9     ----.
         {0b11111,    5}, // 0     -----
-        {0b000000,   6}, // .     ......
-        {0b010101,   6}, // ,     .-.-.-
-        {0b111000,   6}, // :     ---...
-        {0b10101,    5}, // ;     -.-.-
-        {0b101101,   6}, // ()    -.--.-
-        {0b011110,   6}, // '     .----.
-        {0b010010,   6}, // "     .-..-.
-        {0b100001,   6}, // --    -....-
-        {0b10010,    5}, // /     -..-.
+        {0b010101,   6}, // .     .-.-.-
+        {0b110011,   6}, // ,     --..--
         {0b001100,   6}, // ?     ..--..
-        {0b110011,   6}, // !     --..--
+        {0b011110,   6}, // '     .----.
+        {0b101011,   6}, // !     -.-.--
+        {0b10010,    5}, // /     -..-.
+        {0b10110,    5}, // (     -.--.
+        {0b101101,   6}, // )     -.--.-
+        {0b01000,    5}, // &     .-...
+        {0b111000,   6}, // :     ---...
+        {0b10101,    6}, // ;     -.-.-.
+        {0b100001,   6}, // =     -....-
+        {0b01010,    5}, // +     .-.-.
         {0b10001,    5}, // -     -...-
-        {0b00000000, 8}, // error ........
+        {0b001101,   6}, // _     ..--.-
+        {0b010010,   6}, // "     .-..-.
+        {0b0001001,  7}, // $     ...-..-
         {0b011010,   6}, // @     .--.-.
+        {0b00000000, 8}, // error ........
     };
 
     if ( Character == L' ' )
@@ -162,13 +169,13 @@ Return Value:
 #if USE_TETRIX
             pulse.setRedLED(HIGH);
 #else
-            // TODO: normal code
+            digitalWrite(PIN, HIGH);
 #endif
             delay(Bit ? DASH : DOT);
 #if USE_TETRIX
             pulse.setRedLED(LOW);
 #else
-            // TODO: normal code
+            digitalWrite(PIN, LOW);
 #endif
             delay(LETTER_PAUSE);
         }
