@@ -17,7 +17,7 @@ Author:
 --*/
 
 // Determines whether to support normal Uno or TETRIX
-#define USE_PULSE 1
+#define USE_PULSE 0
 
 #if USE_PULSE
 #include <PULSE.h>
@@ -29,6 +29,7 @@ PULSE pulse;
 #define DASH 500 // Length of -
 #define LETTER_PAUSE 750 // space between letters
 #define WORD_PAUSE 1000 // space between words
+#define CANCEL_INDEX 54 // index of the CANCEL character in the tables
 
 // Calculate the size of a normal array
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
@@ -37,26 +38,26 @@ byte
 GetCharacterIndex(wchar_t Character)
 {
     const wchar_t LookupTable[] = {
-        L'А', L'а', L'Б', L'б', L'В', L'в', L'Г', L'г', L'Д', L'д', L'Е', L'е', L'Ж', L'ж', L'З', L'з',
-        L'И', L'и', L'Й', L'й', L'К', L'к', L'Л', L'л', L'М', L'м', L'Н', L'н', L'О', L'о', L'П', L'п',
-        L'Р', L'р', L'С', L'с', L'Т', L'т', L'У', L'у', L'Ф', L'ф', L'Х', L'х', L'Ц', L'ц', L'Ч', L'ч',
-        L'Ш', L'ш', L'Щ', L'щ', L'Ъ', L'ъ', L'Ы', L'ы', L'Ь', L'ь', L'Э', L'э', L'Ю', L'ю', L'Я', L'я',
+        L'А', L'Б', L'В', L'Г', L'Д', L'Е', L'Ж', L'З',
+        L'И', L'Й', L'К', L'Л', L'М', L'Н', L'О', L'П',
+        L'Р', L'С', L'Т', L'У', L'Ф', L'Х', L'Ц', L'Ч',
+        L'Ш', L'Щ', L'Ъ', L'Ы', L'Ь', L'Э', L'Ю', L'Я',
         L'1', L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9', L'0',
-        L'.', L',', L':', L';', L'(', L')', L'\'', L'"', L'-', L'/', L'?', L'!', L'@', L'\x18'
+        L'.', L',', L':', L';', L'(', L'\'', L'"', L'-', L'/', L'?', L'!', L'-', L'\x18', L'@'
     };
 
-    for (int i = 0; i < ARRAY_SIZE(LookupTable); i++)
+    for ( int i = 0; i < ARRAY_SIZE(LookupTable); i++ )
     {
-        if (Character == LookupTable[i])
+        if ( Character == LookupTable[i] || Character == L')' && LookupTable[i] == '(' )
         {
-            return i / isAscii((char)Character) ? 1 : 2; // divide by 2 to account for uppercase and lowercase characters
+            return i;
         }
     }
 
-    return 55; // unknown character or error case
+    return CANCEL_INDEX; // unknown character or error case
 }
 
-void
+bool
 Encode(
     wchar_t Character
     )
@@ -72,7 +73,7 @@ Arguments:
 
 Return Value:
 
-    None.
+    Whether the character was a cancel/invalid.
 
 --*/
 {
@@ -136,11 +137,15 @@ Return Value:
         {0b011010,   6}, // @     .--.-.
     };
 
-    if (Character == L' ')
+    if ( Character == L' ' )
     {
-        Serial.write("\n");
+        Serial.write("space\r\n");
+#if USE_TETRIX
         pulse.setRedLED(LOW);
+#endif
         delay(WORD_PAUSE);
+
+        return false;
     }
     else
     {
@@ -148,11 +153,12 @@ Return Value:
         byte Sequence = Table[Index][0];
         byte SequenceLength = Table[Index][1];
 
-        String UnicodeString = String("u") + String(Character, HEX) + ": ";
-        Serial.write(UnicodeString.c_str(), UnicodeString.length());
-        for (int i = SequenceLength - 1; i >= 0; i--) {
+        Serial.print(Character, HEX);
+        Serial.print("\t");
+        for ( int i = SequenceLength - 1; i >= 0; i-- )
+        {
             bool Bit = (Sequence >> i) & 0b1; // Get just the current bit
-            Serial.write(Bit ? '-' : '.'); // Write a dash or dot depending on the value
+            Serial.print(Bit ? '-' : '.'); // Write a dash or dot depending on the value
 #if USE_TETRIX
             pulse.setRedLED(HIGH);
 #else
@@ -165,6 +171,44 @@ Return Value:
             // TODO: normal code
 #endif
             delay(LETTER_PAUSE);
+        }
+        Serial.print("\r\n");
+
+        if ( Index == CANCEL_INDEX )
+        {
+            return true;
+        }
+
+        return true;
+    }
+}
+
+void
+EncodeString(
+    const wchar_t* String
+    )
+/*++
+
+Routine Description:
+
+    Convenience function to call Encode on each character.
+
+Arguments:
+
+    String - the string to output.
+
+Return Value:
+
+    None.
+
+--*/
+{
+    wchar_t Character;
+    while ( (Character = *String++) )
+    {
+        if ( Encode(Character) )
+        {
+            break;
         }
     }
 }
@@ -187,6 +231,7 @@ Return Value:
 
 --*/
 {
+    Serial.begin(9600);
 #if USE_TETRIX
     pulse.PulseBegin();
 #endif
@@ -198,7 +243,7 @@ loop()
 
 Routine Description:
 
-    Executes repeatedly, blinking the red LED 3 times over 3 seconds.
+    Uses Morse code to output a message.
 
 Arguments:
 
@@ -210,5 +255,5 @@ Return Value:
 
 --*/
 {
-    
+    EncodeString(L"БЛЯДЬ! ");
 }
