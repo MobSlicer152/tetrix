@@ -1,5 +1,5 @@
 {
-    "port": "COM3",
+    "port": "COM4",
     "board": "arduino:avr:uno",
     "programmer": "avrisp",
     "sketch": "tej2o1-01_m-elliot_здравствуйте-мир.ino"

@@ -24,10 +24,11 @@ extern PULSE pulse;
 // Morse code functions
 namespace Morse {
     // Timings in milliseconds
-    constexpr char DOT_LENGTH = 500; // Length of .
-    constexpr char DASH_LENGTH = 1000; // Length of -
-    constexpr char LETTER_PAUSE_LENGTH = 1250; // space between letters
-    constexpr char WORD_PAUSE_LENGTH = 1500; // space between words
+    constexpr short DOT_LENGTH = 500; // Length of .
+    constexpr short DASH_LENGTH = 1000; // Length of -
+    constexpr short LETTER_PAUSE_LENGTH = 1250; // space between letters
+    constexpr short WORD_PAUSE_LENGTH = 1500; // space between words
+    constexpr short MESSAGE_PAUSE_LENGTH = 2000; // space between messages
 
     // Converts the given character to Morse code, outputting it by blinking the 
     // LED and serial. Returns whether the character was a cancel/invalid.

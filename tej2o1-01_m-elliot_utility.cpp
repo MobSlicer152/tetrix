@@ -116,6 +116,7 @@ namespace Morse {
             {
                 bool Bit = (code.sequence >> i) & 0b1; // Get just the current bit
                 Serial.print(Bit ? '-' : '.'); // Write a dash or dot depending on the value
+
                 // Toggle the LED on and off, waiting the right amount of time in between
 #if USE_PULSE
                 pulse.setRedLED(HIGH);
@@ -150,5 +151,9 @@ namespace Morse {
                 break;
             }
         }
+
+        // Wait to start the next message
+        Serial.print("END\r\n\n");
+        delay(MESSAGE_PAUSE_LENGTH);
     }
 }

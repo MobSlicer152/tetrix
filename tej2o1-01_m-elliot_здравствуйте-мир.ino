@@ -3,7 +3,7 @@
 // Name: Elliot McNeil
 // Description:
 //    This program uses a Russian Morse code library I wrote to output the
-//    message "Здравствуйте, мир!" ("Hello, world!" in Russian) on the LED and
+//    message "Привет, мир!" ("Hello, world!" in Russian) on the LED and
 //    serial.
 
 // Definitions moved here for convenience and Arduino-specific reasons
@@ -31,5 +31,5 @@ void loop()
     // capitalization, Arduino doesn't have wctype.h, and a table to convert
     // would take valuable space, so my Morse functions only support capital
     // letters.
-    Morse::Print(L"ЗДРАВСТВУЙТЕ, МИР!");
+    Morse::Print(L"ПРИВЕТ, МИР!");
 }
