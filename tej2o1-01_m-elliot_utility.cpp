@@ -91,6 +91,7 @@ namespace Morse {
 
     bool Output(wchar_t character)
     {
+        // If the character is a space, just pause
         if ( character == L' ' )
         {
             Serial.write("space\r\n");
@@ -101,7 +102,7 @@ namespace Morse {
 
             return false;
         }
-        else
+        else // Otherwise, look up the character and output it
         {
             // Get sequence for the character
             const Code& code = GetCharacterCode(character);
