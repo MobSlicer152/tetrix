@@ -15,6 +15,9 @@ extern PULSE pulse;
 #define LED_PIN LED_BUILTIN
 #endif
 
+// Calculate the size of a normal array (i.e. not a pointer)
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+
 // ASCII cancel, means error/redo
 #define CANCEL 0x18
 
@@ -22,13 +25,10 @@ extern PULSE pulse;
 namespace Morse {
     
 // Timings in milliseconds
-#define DOT_LENGTH 500 // Length of .
-#define DASH_LENGTH 1000 // Length of -
-#define LETTER_PAUSE_LENGTH 1250 // space between letters
-#define WORD_PAUSE_LENGTH 1500 // space between words
-
-// Calculate the size of a normal array (i.e. not a pointer)
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+constexpr char DOT_LENGTH = 500; // Length of .
+constexpr char DASH_LENGTH = 1000; // Length of -
+constexpr char LETTER_PAUSE_LENGTH = 1250; // space between letters
+constexpr char WORD_PAUSE_LENGTH 1500; // space between words
 
 // Converts the given character to Morse code, outputting it by blinking the 
 // LED and serial. Returns whether the character was a cancel/invalid.
