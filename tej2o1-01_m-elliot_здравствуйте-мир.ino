@@ -44,6 +44,37 @@ PULSE pulse;
 // Calculate the size of a normal array (i.e. not a pointer)
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
+// Forward declarations so main functions can go first
+
+// Converts the given character to Morse code, outputting it by blinking the 
+// LED and serial. Returns whether the character was a cancel/invalid.
+bool Encode(wchar_t character);
+
+// Outputs a whole UTF-16 string (I would do UTF-8, but it takes more effort).
+void EncodeString(const wchar_t* message)
+
+// Initializes the program
+void setup()
+{
+    // Initialize serial
+    Serial.begin(9600);
+
+#if USE_TETRIX
+    // Initialize PULSE
+    pulse.PulseBegin();
+#endif
+}
+
+// Repeatedly outputs a message
+void loop()
+{
+    // This means "Hello, world!". Morse code doesn't really have any sense of
+    // capitalization, Arduino doesn't have wctype.h, and a table to convert
+    // would take valuable space, so Encode only supports capital letters.
+    EncodeString(L"ЗДРАВСТВУЙТЕ, МИР!");
+}
+
+// Gets the index of the given character in the other table
 byte GetCharacterIndex(wchar_t character)
 {
     // MUST BE KEPT IN SYNC WITH THE TABLE IN Encode
@@ -68,12 +99,10 @@ byte GetCharacterIndex(wchar_t character)
     return CANCEL_INDEX; // unknown character or error case
 }
 
-// Converts the given character to Morse code, outputting it by blinking the 
-// LED and serial. Returns whether the character was a cancel/invalid.
 bool Encode(wchar_t character)
 {
     // Element 1 stores dot = 0, dash = 1 as binary, element 2 is length of 
-    // sequence (number of bits to check)
+    // sequence (number of bits to check). Pretty efficient.
     // MUST BE KEPT IN SYNC WITH THE LOOKUP TABLE IN GetCharacterIndex
     // 122 bytes
     const byte TABLE[][2] = {
@@ -186,7 +215,6 @@ bool Encode(wchar_t character)
     }
 }
 
-// 
 void EncodeString(const wchar_t* message)
 {
     wchar_t c;
@@ -197,25 +225,4 @@ void EncodeString(const wchar_t* message)
             break;
         }
     }
-}
-
-// Initializes the program
-void setup()
-{
-    // Initialize serial
-    Serial.begin(9600);
-
-#if USE_TETRIX
-    // Initialize PULSE
-    pulse.PulseBegin();
-#endif
-}
-
-// Repeatedly outputs a message
-void loop()
-{
-    // This means "Hello, world!". Morse code doesn't really have any sense of
-    // capitalization, Arduino doesn't have wctype.h, and a table to convert
-    // would take valuable space, so Encode only supports capital letters.
-    EncodeString(L"ЗДРАВСТВУЙТЕ, ЗЕМЛЯ!");
 }
