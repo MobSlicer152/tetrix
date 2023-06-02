@@ -28,18 +28,21 @@ Description:
 PULSE pulse;
 #else
 // The pin the LED is on
-#define PIN 3
+#define LED_PIN LED_BUILTIN
 #endif
 
-#define CANCEL 0x18 // ASCII cancel, means error/redo
+// ASCII cancel, means error/redo
+#define CANCEL 0x18
 
 // Timings in milliseconds
-#define DOT 500 // Length of .
-#define DASH 1000 // Length of -
-#define LETTER_PAUSE 1250 // space between letters
-#define WORD_PAUSE 1500 // space between words
+#define DOT_LENGTH 500 // Length of .
+#define DASH_LENGTH 1000 // Length of -
+#define LETTER_PAUSE_LENGTH 1250 // space between letters
+#define WORD_PAUSE_LENGTH 1500 // space between words
 
-#define CANCEL_INDEX 60 // index of the CANCEL character in the tables
+// Index of the CANCEL character in the tables, initialized the first time
+// GetCharacterIndex is used
+int CANCEL_INDEX = 0;
 
 // Calculate the size of a normal array (i.e. not a pointer)
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
@@ -51,7 +54,7 @@ PULSE pulse;
 bool Encode(wchar_t character);
 
 // Outputs a whole UTF-16 string (I would do UTF-8, but it takes more effort).
-void EncodeString(const wchar_t* message)
+void EncodeString(const wchar_t* message);
 
 // Initializes the program
 void setup()
@@ -62,6 +65,9 @@ void setup()
 #if USE_TETRIX
     // Initialize PULSE
     pulse.PulseBegin();
+#else
+    // Initialize desired LED
+    pinMode(LED_PIN, OUTPUT);
 #endif
 }
 
@@ -85,7 +91,7 @@ byte GetCharacterIndex(wchar_t character)
         L'Р', L'С', L'Т', L'У', L'Ф', L'Х', L'Ц', L'Ч',
         L'Ш', L'Щ', L'Ъ', L'Ы', L'Ь', L'Э', L'Ю', L'Я',
         L'1', L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9', L'0',
-        L'.', L',', L'?', L'\'', L'!', L'/', L'(', L')', L'&', L':', L';', L'=', L'+', L'-', L'_', L'"', L'$', L'@', L'\x18'
+        L'.', L',', L'?', L'\'', L'!', L'/', L'(', L')', L'&', L':', L';', L'=', L'+', L'-', L'_', L'"', L'$', L'@', CANCEL
     };
 
     for (int i = 0; i < ARRAY_SIZE(LOOKUP_TABLE); i++)
@@ -94,6 +100,11 @@ byte GetCharacterIndex(wchar_t character)
         {
             return i;
         }
+    }
+
+    if (CANCEL_INDEX == 0)
+    {
+        CANCEL_INDEX = ARRAY_SIZE(LOOKUP_TABLE);
     }
 
     return CANCEL_INDEX; // unknown character or error case
@@ -175,43 +186,45 @@ bool Encode(wchar_t character)
 #if USE_TETRIX
         pulse.setRedLED(LOW);
 #endif
-        delay(WORD_PAUSE);
+        delay(WORD_PAUSE_LENGTH);
 
         return false;
     }
     else
     {
+        // Get sequence for the character
         byte index = GetCharacterIndex(character);
         byte sequence = TABLE[index][0];
         byte sequenceLength = TABLE[index][1];
 
+        // Output the value of the character in hexadecimal
         Serial.print(character, HEX);
         Serial.print("\t");
+
+        // Iterate through the bits in the sequence
         for ( int i = sequenceLength - 1; i >= 0; i-- )
         {
             bool Bit = (sequence >> i) & 0b1; // Get just the current bit
             Serial.print(Bit ? '-' : '.'); // Write a dash or dot depending on the value
+            // Toggle the LED on and off, waiting the right amount of time in between
 #if USE_TETRIX
             pulse.setRedLED(HIGH);
 #else
-            digitalWrite(PIN, HIGH);
+            digitalWrite(LED_PIN, HIGH);
 #endif
-            delay(Bit ? DASH : DOT);
+            delay(Bit ? DASH_LENGTH : DOT_LENGTH);
 #if USE_TETRIX
             pulse.setRedLED(LOW);
 #else
-            digitalWrite(PIN, LOW);
+            digitalWrite(LED_PIN, LOW);
 #endif
-            delay(LETTER_PAUSE);
+            delay(Bit ? DASH_LENGTH : DOT_LENGTH);
         }
         Serial.print("\r\n");
 
-        if ( index == CANCEL_INDEX )
-        {
-            return true;
-        }
+        delay(LETTER_PAUSE_LENGTH);
 
-        return false;
+        return index == CANCEL_INDEX;
     }
 }
 
