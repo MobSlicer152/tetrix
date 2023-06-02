@@ -1,45 +1,54 @@
 /*++
 
-Copyright (c) 2023 Elliot McNeil
+Date:
 
-Module Name:
+    2023-06-01
 
-    test.ino
+Course:
 
-Abstract:
+    TEJ2O1-01
 
-    This module implements Russian Morse code for the TETRIX PULSE board.
+Name:
 
-Author:
+    Elliot McNeil
 
-    Elliot McNeil (elliot.mcneil@student.tdsb.on.ca) 2023-06-01
+Description:
+
+    This program implements Russian Morse code with output to an LED and serial.
 
 --*/
 
-// Determines whether to support normal Uno or TETRIX
+// Determines whether to support normal Arduino or TETRIX
 #define USE_PULSE 0
 
 #if USE_PULSE
 #include <PULSE.h>
+
+// Global PULSE instance
 PULSE pulse;
 #else
+// The pin the LED is on
 #define PIN 3
 #endif
 
 #define CANCEL 0x18 // ASCII cancel, means error/redo
+
+// Timings in milliseconds
 #define DOT 500 // Length of .
 #define DASH 1000 // Length of -
 #define LETTER_PAUSE 1250 // space between letters
 #define WORD_PAUSE 1500 // space between words
+
 #define CANCEL_INDEX 60 // index of the CANCEL character in the tables
 
-// Calculate the size of a normal array
+// Calculate the size of a normal array (i.e. not a pointer)
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
-byte
-GetCharacterIndex(wchar_t Character)
+byte GetCharacterIndex(wchar_t character)
 {
-    const wchar_t LookupTable[] = {
+    // MUST BE KEPT IN SYNC WITH THE TABLE IN Encode
+    // 122 bytes
+    const wchar_t LOOKUP_TABLE[] = {
         L'А', L'Б', L'В', L'Г', L'Д', L'Е', L'Ж', L'З',
         L'И', L'Й', L'К', L'Л', L'М', L'Н', L'О', L'П',
         L'Р', L'С', L'Т', L'У', L'Ф', L'Х', L'Ц', L'Ч',
@@ -48,9 +57,9 @@ GetCharacterIndex(wchar_t Character)
         L'.', L',', L'?', L'\'', L'!', L'/', L'(', L')', L'&', L':', L';', L'=', L'+', L'-', L'_', L'"', L'$', L'@', L'\x18'
     };
 
-    for ( int i = 0; i < ARRAY_SIZE(LookupTable); i++ )
+    for (int i = 0; i < ARRAY_SIZE(LOOKUP_TABLE); i++)
     {
-        if ( Character == LookupTable[i] || Character == L')' && LookupTable[i] == '(' )
+        if (character == LOOKUP_TABLE[i])
         {
             return i;
         }
@@ -59,28 +68,15 @@ GetCharacterIndex(wchar_t Character)
     return CANCEL_INDEX; // unknown character or error case
 }
 
-bool
-Encode(
-    wchar_t Character
-    )
-/*++
-
-Routine Description:
-
-    Encode characters into Morse code, output to LED and serial.
-
-Arguments:
-
-    Character - The character to encode.
-
-Return Value:
-
-    Whether the character was a cancel/invalid.
-
---*/
+// Converts the given character to Morse code, outputting it by blinking the 
+// LED and serial. Returns whether the character was a cancel/invalid.
+bool Encode(wchar_t character)
 {
-    // Element 1 stores dot = 0, dash = 1 as binary, element 2 is length of sequence (number of bits to check)
-    const byte Table[][2] = {
+    // Element 1 stores dot = 0, dash = 1 as binary, element 2 is length of 
+    // sequence (number of bits to check)
+    // MUST BE KEPT IN SYNC WITH THE LOOKUP TABLE IN GetCharacterIndex
+    // 122 bytes
+    const byte TABLE[][2] = {
         {0b01,       2}, // А     .-
         {0b1000,     4}, // Б     -...
         {0b011,      3}, // В     .--
@@ -144,7 +140,7 @@ Return Value:
         {0b00000000, 8}, // error ........
     };
 
-    if ( Character == L' ' )
+    if ( character == L' ' )
     {
         Serial.write("space\r\n");
 #if USE_TETRIX
@@ -156,15 +152,15 @@ Return Value:
     }
     else
     {
-        byte Index = GetCharacterIndex(Character);
-        byte Sequence = Table[Index][0];
-        byte SequenceLength = Table[Index][1];
+        byte index = GetCharacterIndex(character);
+        byte sequence = TABLE[index][0];
+        byte sequenceLength = TABLE[index][1];
 
-        Serial.print(Character, HEX);
+        Serial.print(character, HEX);
         Serial.print("\t");
-        for ( int i = SequenceLength - 1; i >= 0; i-- )
+        for ( int i = sequenceLength - 1; i >= 0; i-- )
         {
-            bool Bit = (Sequence >> i) & 0b1; // Get just the current bit
+            bool Bit = (sequence >> i) & 0b1; // Get just the current bit
             Serial.print(Bit ? '-' : '.'); // Write a dash or dot depending on the value
 #if USE_TETRIX
             pulse.setRedLED(HIGH);
@@ -181,7 +177,7 @@ Return Value:
         }
         Serial.print("\r\n");
 
-        if ( Index == CANCEL_INDEX )
+        if ( index == CANCEL_INDEX )
         {
             return true;
         }
@@ -190,77 +186,36 @@ Return Value:
     }
 }
 
-void
-EncodeString(
-    const wchar_t* String
-    )
-/*++
-
-Routine Description:
-
-    Convenience function to call Encode on each character.
-
-Arguments:
-
-    String - the string to output.
-
-Return Value:
-
-    None.
-
---*/
+// 
+void EncodeString(const wchar_t* message)
 {
-    wchar_t Character;
-    while ( (Character = *String++) )
+    wchar_t c;
+    while ((c = *message++))
     {
-        if ( Encode(Character) )
+        if (Encode(c))
         {
             break;
         }
     }
 }
 
-void
-setup()
-/*++
-
-Routine Description:
-
-    This routine initializes the microcontroller.
-
-Arguments:
-
-    None.
-
-Return Value:
-
-    None.
-
---*/
+// Initializes the program
+void setup()
 {
+    // Initialize serial
     Serial.begin(9600);
+
 #if USE_TETRIX
+    // Initialize PULSE
     pulse.PulseBegin();
 #endif
 }
 
-void 
-loop()
-/*++
-
-Routine Description:
-
-    Uses Morse code to output a message.
-
-Arguments:
-
-    None.
-
-Return Value:
-
-    None.
-
---*/
+// Repeatedly outputs a message
+void loop()
 {
-    EncodeString(L"БЛЯДЬ! ");
+    // This means "Hello, world!". Morse code doesn't really have any sense of
+    // capitalization, Arduino doesn't have wctype.h, and a table to convert
+    // would take valuable space, so Encode only supports capital letters.
+    EncodeString(L"ЗДРАВСТВУЙТЕ, ЗЕМЛЯ!");
 }
