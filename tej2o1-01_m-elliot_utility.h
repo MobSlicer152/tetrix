@@ -33,7 +33,7 @@ namespace Morse {
     // LED and serial. Returns whether the character was a cancel/invalid.
     extern bool Output(wchar_t character);
 
-    // Outputs a whole UTF-16 string (I would do UTF-8, but it takes more effort).
+    // Outputs a NUL-terminated UTF-16 string
     extern void Print(const wchar_t* message);
 
     // Structure to store Morse code sequences

@@ -83,11 +83,11 @@ namespace Morse {
             {
                 return TABLE[i];
             }
-            }
+        }
 
         // Return the CANCEL sequence if the character was not found
         return TABLE[ARRAY_SIZE(TABLE) - 1];
-        }
+    }
 
     bool Output(wchar_t character)
     {
@@ -97,18 +97,18 @@ namespace Morse {
 #if USE_PULSE
             pulse.setRedLED(LOW);
 #endif
-                delay(WORD_PAUSE_LENGTH);
+            delay(WORD_PAUSE_LENGTH);
 
             return false;
         }
         else
         {
             // Get sequence for the character
-                const Code& code = GetCharacterCode(character);
+            const Code& code = GetCharacterCode(character);
 
             // Output the value of the character in hexadecimal
             Serial.print(character, HEX);
-                Serial.print("\t");
+            Serial.print("\t");
 
             // Iterate through the bits in the sequence
             for ( int i = code.length - 1; i >= 0; i-- )
@@ -129,16 +129,18 @@ namespace Morse {
 #endif
                 delay(Bit ? DASH_LENGTH : DOT_LENGTH);
             }
-                Serial.print("\r\n");
+            Serial.print("\r\n");
 
-                delay(LETTER_PAUSE_LENGTH);
+            delay(LETTER_PAUSE_LENGTH);
 
             return code.character == CANCEL;
         }
-        }
+    }
 
     void Print(const wchar_t* message)
     {
+        // Go through all characters in the string until the NUL byte at the
+        // end
         wchar_t c;
         while ((c = *message++))
         {

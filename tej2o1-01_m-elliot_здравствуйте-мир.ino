@@ -1,7 +1,10 @@
 // Date: 2023-06-01
 // Course: TEJ2O1-01
 // Name: Elliot McNeil
-// Description: This program implements Russian Morse code with output to an LED and serial.
+// Description:
+//    This program uses a Russian Morse code library I wrote to output the
+//    message "Здравствуйте, мир!" ("Hello, world!" in Russian) on the LED and
+//    serial.
 
 // Definitions moved here for convenience and Arduino-specific reasons
 #include "tej2o1-01_m-elliot_utility.h"
