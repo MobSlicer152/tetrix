@@ -2,6 +2,10 @@
 
 #include "tej2o1-01_m-elliot_utility.h"
 
+#ifdef USE_PULSE
+PULSE pulse;
+#endif
+
 namespace Morse {
     // Character encoding table, efficiently stores necessary information.
     static const Code TABLE[] = {
@@ -66,7 +70,7 @@ namespace Morse {
         {L'$',    0b0001001,  7}, // ...-..-
         {L'@',    0b011010,   6}, // .--.-.
         {CANCEL,  0b00000000, 8}, // ........
-        };
+    };
 
     // Find the code for the given character, returning the address of the entry
     const Code& GetCharacterCode(wchar_t character)
@@ -90,7 +94,7 @@ namespace Morse {
         if ( character == L' ' )
         {
             Serial.write("space\r\n");
-#if USE_TETRIX
+#if USE_PULSE
             pulse.setRedLED(LOW);
 #endif
                 delay(WORD_PAUSE_LENGTH);
@@ -112,13 +116,13 @@ namespace Morse {
                 bool Bit = (code.sequence >> i) & 0b1; // Get just the current bit
                 Serial.print(Bit ? '-' : '.'); // Write a dash or dot depending on the value
                 // Toggle the LED on and off, waiting the right amount of time in between
-#if USE_TETRIX
+#if USE_PULSE
                 pulse.setRedLED(HIGH);
 #else
                 digitalWrite(LED_PIN, HIGH);
 #endif
                 delay(Bit ? DASH_LENGTH : DOT_LENGTH);
-#if USE_TETRIX
+#if USE_PULSE
                 pulse.setRedLED(LOW);
 #else
                 digitalWrite(LED_PIN, LOW);
