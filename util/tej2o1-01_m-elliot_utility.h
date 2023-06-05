@@ -12,17 +12,30 @@
 extern PULSE pulse;
 #else
 // The pin the LED is on
-#define LED_PIN LED_BUILTIN
+constexpr int LED_PIN = LED_BUILTIN;
 #endif
 
-// Calculate the size of a normal array (i.e. not a pointer)
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+// This analog pin is expected to have nothing connected so it can be used to
+// seed the random number generator
+constexpr int RANDOM_PIN = 0;
 
 // ASCII cancel, means error/redo
 #define CANCEL 0x18
 
+// General utility functions
+namespace Util
+{
+    // Initialize frequently used things
+    extern void Initialize();
+
+    // Array size
+    template<class T, size_t N>
+    constexpr size_t ArraySize(T (&)[N]) { return N; }
+}
+
 // Morse code functions
-namespace Morse {
+namespace Morse
+{
     // Timings in milliseconds
     constexpr short DOT_LENGTH = 500; // Length of .
     constexpr short DASH_LENGTH = 1000; // Length of -

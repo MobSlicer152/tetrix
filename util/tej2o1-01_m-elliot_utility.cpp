@@ -6,7 +6,31 @@
 PULSE pulse;
 #endif
 
-namespace Morse {
+namespace Util
+{
+    // Initialize things frequently used
+    void Initialize()
+    {
+        // Initialize serial
+        Serial.begin(9600);
+
+    #if USE_PULSE
+        // Initialize PULSE
+        pulse.PulseBegin();
+    #else
+        // Initialize desired LED
+        pinMode(LED_PIN, OUTPUT);
+    #endif
+
+        // Seed RNG, this pin is expected to be disconnected
+        randomSeed(analogRead(RANDOM_PIN));
+
+        Serial.println("Utility library initialized");
+    }
+}
+
+namespace Morse
+{
     // Character encoding table, efficiently stores necessary information.
     static const Code TABLE[] = {
         {L'А',    0b01,       2}, // .-
@@ -77,7 +101,7 @@ namespace Morse {
     {
         // Look up the character in the table if it isn't CANCEL, otherwise just
         // return the CANCEL sequence
-        for (int i = 0; i < ARRAY_SIZE(TABLE) && character != CANCEL; i++)
+        for (int i = 0; i < Util::ArraySize(TABLE) && character != CANCEL; i++)
         {
             if (character == TABLE[i].character)
             {
@@ -86,7 +110,7 @@ namespace Morse {
         }
 
         // Return the CANCEL sequence if the character was not found
-        return TABLE[ARRAY_SIZE(TABLE) - 1];
+        return TABLE[Util::ArraySize(TABLE) - 1];
     }
 
     bool Output(wchar_t character)

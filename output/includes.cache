@@ -1,0 +1,47 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "C:\\Users\\bramb\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\cores\\arduino"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "C:\\Users\\bramb\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\variants\\standard"
+  },
+  {
+    "Sourcefile": "C:\\Users\\bramb\\source\\repos\\tetrix\\output\\sketch\\tej2o1-01_m-elliot_servo.ino.cpp",
+    "Include": "PULSE.h",
+    "Includepath": "C:\\Users\\bramb\\OneDrive\\Documents\\Arduino\\libraries\\TETRIX_PULSE"
+  },
+  {
+    "Sourcefile": "C:\\Users\\bramb\\source\\repos\\tetrix\\output\\sketch\\tej2o1-01_m-elliot_servo.ino.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\bramb\\source\\repos\\tetrix\\output\\sketch\\src\\tej2o1-01_m-elliot_utility.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\bramb\\OneDrive\\Documents\\Arduino\\libraries\\TETRIX_PULSE\\PULSE.cpp",
+    "Include": "Wire.h",
+    "Includepath": "C:\\Users\\bramb\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\libraries\\Wire\\src"
+  },
+  {
+    "Sourcefile": "C:\\Users\\bramb\\OneDrive\\Documents\\Arduino\\libraries\\TETRIX_PULSE\\PULSE.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\bramb\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\libraries\\Wire\\src\\Wire.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\bramb\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\libraries\\Wire\\src\\utility\\twi.c",
+    "Include": "",
+    "Includepath": null
+  }
+]

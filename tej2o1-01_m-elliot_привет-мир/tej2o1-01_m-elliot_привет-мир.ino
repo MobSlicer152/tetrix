@@ -7,21 +7,13 @@
 //    serial.
 
 // Definitions moved here for convenience and Arduino-specific reasons
-#include "tej2o1-01_m-elliot_utility.h"
+#include "src/tej2o1-01_m-elliot_utility.h"
 
 // Initializes the program
 void setup()
 {
-    // Initialize serial
-    Serial.begin(9600);
-
-#if USE_PULSE
-    // Initialize PULSE
-    pulse.PulseBegin();
-#else
-    // Initialize desired LED
-    pinMode(LED_PIN, OUTPUT);
-#endif
+    // Initialize my library
+    Util::Initialize();
 }
 
 // Repeatedly outputs a message
