@@ -175,9 +175,5 @@ namespace Morse
                 break;
             }
         }
-
-        // Wait to start the next message
-        Serial.print("END\r\n\n");
-        delay(MESSAGE_PAUSE_LENGTH);
     }
 }

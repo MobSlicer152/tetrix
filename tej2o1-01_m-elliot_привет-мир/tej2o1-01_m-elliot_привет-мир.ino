@@ -22,6 +22,6 @@ void loop()
     // This means "Hello, world!". Morse code doesn't really have any sense of
     // capitalization, Arduino doesn't have wctype.h, and a table to convert
     // would take valuable space, so my Morse functions only support capital
-    // letters.
-    Morse::Print(L"ПРИВЕТ, МИР!");
+    // letters. Plus signs are used to denote the end of the message.
+    Morse::Print(L"ПРИВЕТ, МИР!+");
 }
