@@ -27,7 +27,7 @@ void loop()
     int distance = pulse.readSonicSensorCM(ULTRASONIC_SENSOR);
     if (distance <= 1)
     {
-        Morse::Print(L"близлежащий объект+");
+        Morse::Print(L"Близлежащий объект+");
     }
 
     // Delay for longer the farther away
