@@ -9,6 +9,11 @@
 // Definitions moved here for convenience and Arduino-specific reasons
 #include "src/tej2o1-01_m-elliot_utility.h"
 
+// Make sure PULSE is in use
+#ifndef USE_PULSE
+#error This code requires PULSE
+#endif
+
 // Initializes the program
 void setup()
 {
@@ -16,12 +21,11 @@ void setup()
     Util::Initialize();
 }
 
-// Repeatedly outputs a message
+// Outputs the message with a 1 second delay between
 void loop()
 {
-    // This means "Hello, world!". Morse code doesn't really have any sense of
-    // capitalization, Arduino doesn't have wctype.h, and a table to convert
-    // would take valuable space, so my Morse functions only support capital
-    // letters. Plus signs are used to denote the end of the message.
-    Morse::Print(L"ПРИВЕТ, МИР!+");
+    // This means "Hello, world!". Plus signs are used to denote the end of the
+    // message, because the sequence for them is also used for that.
+    Morse::Print(L"Привет, мир!+");
+    delay(1000);
 }

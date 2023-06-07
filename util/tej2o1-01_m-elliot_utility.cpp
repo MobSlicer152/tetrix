@@ -27,6 +27,18 @@ namespace Util
 
         Serial.println("Utility library initialized");
     }
+
+    // Turn off all LEDs that could be in use
+    void ResetLeds()
+    {
+#if USE_PULSE
+        pulse.setGreenLED(LOW);
+        pulse.setRedLED(LOW);
+        pulse.setYellowLED(LOW);
+#else
+        digitalWrite(LED_PIN, LOW);
+#endif
+    }
 }
 
 namespace Morse
@@ -103,7 +115,7 @@ namespace Morse
         // return the CANCEL sequence
         for (int i = 0; i < Util::ArraySize(TABLE) && character != CANCEL; i++)
         {
-            if (character == TABLE[i].character)
+            if (toUpperCase(character) == TABLE[i].character)
             {
                 return TABLE[i];
             }
@@ -120,7 +132,9 @@ namespace Morse
         {
             Serial.write("space\r\n");
 #if USE_PULSE
-            pulse.setRedLED(LOW);
+                pulse.setRedLED(LOW);
+#else
+                digitalWrite(LED_PIN, LOW);
 #endif
             delay(WORD_PAUSE_LENGTH);
 
@@ -132,7 +146,7 @@ namespace Morse
             const Code& code = GetCharacterCode(character);
 
             // Output the value of the character in hexadecimal
-            Serial.print(character, HEX);
+            Serial.print(code.character, HEX);
             Serial.print("\t");
 
             // Iterate through the bits in the sequence

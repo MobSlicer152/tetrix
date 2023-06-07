@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <WCharacter.h>
 
 // Determines whether to support normal Arduino or TETRIX
 #define USE_PULSE 1
@@ -31,6 +32,9 @@ namespace Util
     // Array size
     template<class T, size_t N>
     constexpr size_t ArraySize(T (&)[N]) { return N; }
+
+    // Turn off some LEDs
+    extern void ResetLeds();
 }
 
 // Morse code functions
