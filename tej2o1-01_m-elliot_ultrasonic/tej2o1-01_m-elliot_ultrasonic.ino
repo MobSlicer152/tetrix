@@ -2,8 +2,8 @@
 // Course: TEJ2O1-01
 // Name: Elliot McNeil
 // Description:
-//     Blinks the yellow LED faster until within 1 cm, then outputs
-//     "близлежащий объект" ("nearby object") in Morse code.
+//     Blinks the green LED faster until within 1 cm, then outputs
+//     "Близлежащий объект" ("nearby object") in Morse code.
 
 #include "src/tej2o1-01_m-elliot_utility.h"
 
@@ -25,13 +25,13 @@ void setup()
 void loop()
 {
     int distance = pulse.readSonicSensorCM(ULTRASONIC_SENSOR);
-    if (distance <= 1)
+    if (distance == 1)
     {
         Morse::Print(L"Близлежащий объект+");
     }
 
     // Delay for longer the farther away
-    pulse.setYellowLED(HIGH);
-    delay(distance * 30);
-    pulse.setYellowLED(LOW);
+    pulse.setGreenLED(HIGH);
+    delay(distance * 60);
+    pulse.setGreenLED(LOW);
 }

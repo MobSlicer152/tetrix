@@ -14,7 +14,7 @@
 #endif
 
 // Which motors to rotate
-constexpr int MOTOR = 1;
+constexpr int MOTOR = 2;
 constexpr int SERVO = 1;
 
 // Initializes the program
@@ -48,7 +48,9 @@ void loop()
 
     // Move the servo in the opposite direction to the DC at the same speed
     pulse.setServoSpeed(SERVO, abs(rotation));
-    pulse.setServoPosition(SERVO, rotationSign * 180);
+    pulse.setServoPosition(SERVO, (rotationSign * 180) * -1);
 
+    delay(1000);
+    pulse.setMotorPower(MOTOR, 0);
     delay(1000);
 }

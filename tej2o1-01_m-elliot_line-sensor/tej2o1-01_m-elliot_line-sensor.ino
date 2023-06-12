@@ -3,7 +3,7 @@
 // Name: Elliot McNeil
 // Description:
 //     Turns on either the yellow or green LED depending on if a line is
-//     detected, and outputs "Объект обнаружен" ("object detected") if one is.
+//     detected
 
 #include "src/tej2o1-01_m-elliot_utility.h"
 
@@ -24,14 +24,14 @@ void setup()
 // Detect lines
 void loop()
 {
-    Util::ResetLeds();
-    if (pulse.readLineSensonr(LINE_SENSOR))
+    if (pulse.readLineSensor(LINE_SENSOR))
     {
         pulse.setGreenLED(HIGH);
-        Morse::Print(L"Объект обнаружен+");
+        pulse.setYellowLED(LOW);
     }
     else
     {
+        pulse.setGreenLED(LOW);
         pulse.setYellowLED(HIGH);
     }
 }
