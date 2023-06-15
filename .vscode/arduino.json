@@ -2,11 +2,5 @@
     "port": "COM4",
     "board": "arduino:avr:uno",
     "programmer": "avrisp",
-    "output": "output",
-    "buildPreferences": [
-        [
-            "build.extra_flags",
-            "-I${workspaceFolder}"
-        ]
-    ],
+    "sketch": "tej2o1-01_m-elliot_robot\\tej2o1-01_m-elliot_robot.ino"
 }

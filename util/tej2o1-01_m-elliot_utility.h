@@ -13,15 +13,15 @@
 extern PULSE pulse;
 #else
 // The pin the LED is on
-constexpr int LED_PIN = LED_BUILTIN;
+constexpr uint8_t LED_PIN = LED_BUILTIN;
 #endif
 
 // This analog pin is expected to have nothing connected so it can be used to
 // seed the random number generator
-constexpr int RANDOM_PIN = 0;
+constexpr uint8_t RANDOM_PIN = 0;
 
 // ASCII cancel, means error/redo
-#define CANCEL 0x18
+constexpr char CANCEL = 0x18;
 
 // General utility functions
 namespace Util
@@ -41,10 +41,10 @@ namespace Util
 namespace Morse
 {
     // Timings in milliseconds
-    constexpr short DOT_LENGTH = 60; // Length of .
-    constexpr short DASH_LENGTH = DOT_LENGTH * 3; // Length of -
-    constexpr short LETTER_PAUSE_LENGTH = DOT_LENGTH * 3; // space between letters
-    constexpr short WORD_PAUSE_LENGTH = DOT_LENGTH * 7; // space between words
+    constexpr uint16_t DOT_LENGTH = 60; // Length of .
+    constexpr uint16_t DASH_LENGTH = DOT_LENGTH * 3; // Length of -
+    constexpr uint16_t LETTER_PAUSE_LENGTH = DOT_LENGTH * 3; // space between letters
+    constexpr uint16_t WORD_PAUSE_LENGTH = DOT_LENGTH * 7; // space between words
 
     // Converts the given character to Morse code, outputting it by blinking the 
     // LED and serial. Returns whether the character was a cancel/invalid.
