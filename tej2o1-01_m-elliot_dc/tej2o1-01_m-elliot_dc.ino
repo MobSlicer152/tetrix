@@ -8,7 +8,7 @@
 #include "src/tej2o1-01_m-elliot_utility.h"
 
 // Which motor to rotate
-constexpr int MOTOR = 1;
+constexpr int MOTOR = 2;
 
 // Initializes the program
 void setup()
