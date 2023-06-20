@@ -3,6 +3,8 @@
 // Name: Elliot McNeil
 // Description: Robot
 
+#define SIMON
+
 #ifdef SIMON
 #include <PULSE.h>
 #else
@@ -47,11 +49,11 @@ class Robot
     }
 
     // Go straight
-    void Drive(uint16_t duration, bool backward)
+    void Drive(uint16_t duration = 0, uint8_t power = 100, bool backward = false)
     {
         Serial.println(String("Drive ") + duration + " " + backward);
-        m_pulse.setMotorPower(m_rightMotor, 100);
-        m_pulse.setMotorPower(m_leftMotor, -100);
+        m_pulse.setMotorPower(m_rightMotor, backward ? -power : power);
+        m_pulse.setMotorPower(m_leftMotor, backward ? power : -power);
         if (duration > 0)
         {
             delay(duration);
@@ -59,12 +61,13 @@ class Robot
         }
     }
 
-    // Rotate in place
-    void Turn(uint16_t duration, bool left)
+    // Rotate
+    void Turn(uint16_t duration = 0, bool left = false)
     {
         Serial.println(String("In-place turn ") + duration + " left " + left);
-        m_pulse.setMotorPower(m_rightMotor, left ? 100 : 10);
-        m_pulse.setMotorPower(m_leftMotor, left ? -100 : -10);
+        // motors are opposite
+        m_pulse.setMotorPower(m_rightMotor, left ? 100 : -100);
+        m_pulse.setMotorPower(m_leftMotor, left ? 100 : -100);
         if (duration > 0)
         {
             delay(duration);
@@ -115,14 +118,17 @@ Robot robot;
 void setup()
 {
     robot = Robot(1, 2, 3, 1, 2, 3);
+#ifndef SIMON
     Util::Initialize();
+    Morse::Output("Меня зовут Грег!+");
+#endif
 }
 
 void AvoidObstacles()
 {
-    robot.Turn(2500, false);
-    robot.Drive(2500, false);
-    robot.Turn(2500, true);
+    robot.Turn(500, true);
+    robot.Drive(1000);
+    robot.Turn(1000);
 }
 
 void End()
@@ -143,17 +149,19 @@ void End()
 void loop()
 {
 
-    if (robot.DetectObject() <= 20)
+    if (robot.DetectObject() <= 30)
     {
         AvoidObstacles();
     }
     else
     {
-        robot.Drive(0, false);
-    }
-
-    if (robot.DetectLine())
-    {
-        End();
+        if (robot.DetectLine())
+        {
+            End();
+        }
+        else
+        {
+            robot.Drive(0, 50);
+        }
     }
 }
